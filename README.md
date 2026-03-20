@@ -20,21 +20,26 @@
 
 #### Frps配置页
 
-![image-20260320174945184](C:\Users\25040\AppData\Roaming\Typora\typora-user-images\image-20260320174945184.png)
+<img width="1872" height="948" alt="image" src="https://github.com/user-attachments/assets/55c2777c-d58c-49e0-acb5-fb896c9d46f4" />
+
 
 #### Frpc配置页
 
-![image-20260320175145031](C:\Users\25040\AppData\Roaming\Typora\typora-user-images\image-20260320175145031.png)
+<img width="1872" height="948" alt="image" src="https://github.com/user-attachments/assets/fffe33b8-2f3e-4cab-af38-d3570f444d44" />
 
-![image-20260320175206843](C:\Users\25040\AppData\Roaming\Typora\typora-user-images\image-20260320175206843.png)
 
-![image-20260320175242042](C:\Users\25040\AppData\Roaming\Typora\typora-user-images\image-20260320175242042.png)
+<img width="1872" height="948" alt="image" src="https://github.com/user-attachments/assets/27656584-0bdf-4bd0-a0bb-09aa8673037b" />
 
-![image-20260320175316003](C:\Users\25040\AppData\Roaming\Typora\typora-user-images\image-20260320175316003.png)
+
+<img width="1872" height="948" alt="image" src="https://github.com/user-attachments/assets/2e02200a-2215-4b63-bd10-6f048146cc5b" />
+
+
+<img width="1872" height="948" alt="image" src="https://github.com/user-attachments/assets/dc015e90-5ebf-4392-a977-dcc4f4430a74" />
+
 
 ## 🛠️ 快速启动 (服务端部署)
 
-我们提供了一键部署脚本，会自动安装 Node.js、FRP、编译项目并配置 systemd 守护进程。
+我提供了一键部署脚本，会自动安装 Node.js、FRP、编译项目并配置 systemd 守护进程。
 
 ## 环境要求
 
