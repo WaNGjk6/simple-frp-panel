@@ -37,15 +37,21 @@ if ! command -v apt-get &> /dev/null && ! command -v yum &> /dev/null; then
     exit 1
 fi
 
-echo -e "${BLUE}[1/7] 安装系统依赖...${NC}"
+echo -e "${BLUE}[1/8] 安装系统依赖 (含解压工具)...${NC}"
 if command -v apt-get &> /dev/null; then
     apt-get update -qq
-    apt-get install -y -qq curl wget git systemd
+    apt-get install -y -qq curl wget git systemd tar gzip
 else
-    yum install -y -q curl wget git systemd
+    yum install -y -q curl wget git systemd tar gzip
 fi
 
-echo -e "${BLUE}[2/7] 安装 Node.js ${NODE_VERSION}...${NC}"
+# 验证解压工具
+if ! command -v tar &> /dev/null; then
+    echo -e "${RED}错误: tar 命令未找到，请手动安装${NC}"
+    exit 1
+fi
+
+echo -e "${BLUE}[2/8] 安装 Node.js ${NODE_VERSION}...${NC}"
 if ! command -v node &> /dev/null || [ "$(node -v | cut -d'v' -f2 | cut -d'.' -f1)" != "$NODE_VERSION" ]; then
     curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash - 2>/dev/null || \
     curl -fsSL https://rpm.nodesource.com/setup_${NODE_VERSION}.x | bash -
@@ -60,7 +66,7 @@ fi
 echo "Node.js 版本: $(node -v)"
 echo "npm 版本: $(npm -v)"
 
-echo -e "${BLUE}[3/7] 下载 FrpUi 项目...${NC}"
+echo -e "${BLUE}[3/8] 下载 FrpUi 项目...${NC}"
 if [ -d "$INSTALL_DIR" ]; then
     echo -e "${YELLOW}目录已存在，更新代码...${NC}"
     cd $INSTALL_DIR
@@ -69,24 +75,40 @@ else
     git clone --depth 1 $PROJECT_URL $INSTALL_DIR
 fi
 
-echo -e "${BLUE}[4/7] 下载并安装 frp 到项目目录...${NC}"
+echo -e "${BLUE}[4/8] 下载并安装 frp 到项目目录...${NC}"
 cd $INSTALL_DIR
 
 if [ ! -f "$INSTALL_DIR/frps" ]; then
     echo "下载 frp ${FRP_VERSION}..."
     wget -q --show-progress -O frp.tar.gz $FRP_URL
+    
+    # 验证下载成功
+    if [ ! -f "frp.tar.gz" ]; then
+        echo -e "${RED}错误: frp 下载失败${NC}"
+        exit 1
+    fi
+    
+    echo "解压 frp..."
     tar -xzf frp.tar.gz --strip-components=1
     rm -f frp.tar.gz
     chmod +x frps frpc
+    
+    # 验证解压成功
+    if [ ! -f "$INSTALL_DIR/frps" ]; then
+        echo -e "${RED}错误: frp 解压失败，frps 文件未找到${NC}"
+        exit 1
+    fi
+    
     echo -e "${GREEN}frp 安装完成${NC}"
 else
     echo -e "${YELLOW}frp 已存在，跳过下载${NC}"
 fi
 
-echo -e "${BLUE}[5/7] 安装项目依赖...${NC}"
+echo -e "${BLUE}[5/8] 安装项目依赖...${NC}"
+cd $INSTALL_DIR
 npm install --production 2>&1 | tail -5
 
-echo -e "${BLUE}[6/7] 创建 frps 配置文件...${NC}"
+echo -e "${BLUE}[6/8] 创建 frps 配置文件...${NC}"
 if [ ! -f "$INSTALL_DIR/frps.toml" ]; then
     cat > $INSTALL_DIR/frps.toml << 'EOF'
 # FRP 服务端配置
@@ -102,7 +124,7 @@ EOF
     echo -e "${YELLOW}请编辑 $INSTALL_DIR/frps.toml 修改配置${NC}"
 fi
 
-echo -e "${BLUE}[7/7] 创建 systemd 服务...${NC}"
+echo -e "${BLUE}[7/8] 创建 systemd 服务...${NC}"
 
 # FrpUi 服务
 cat > /etc/systemd/system/frpui.service << EOF
@@ -144,30 +166,73 @@ EOF
 # 重载 systemd
 systemctl daemon-reload
 
-echo -e "${BLUE}[启动服务...]${NC}"
+echo -e "${BLUE}[8/8] 启动服务并验证...${NC}"
 
 # 启动 frps
 systemctl enable frps
 systemctl start frps
-sleep 2
+sleep 3
+
+# 检查 frps 是否真正启动
+FRPS_STATUS=$(systemctl is-active frps)
+if [ "$FRPS_STATUS" != "active" ]; then
+    echo -e "${RED}警告: frps 服务启动失败${NC}"
+    echo "查看日志: journalctl -u frps -n 20"
+    systemctl status frps --no-pager
+else
+    echo -e "${GREEN}✓ frps 服务运行正常${NC}"
+fi
 
 # 启动 FrpUi
 systemctl enable frpui
 systemctl start frpui
-sleep 2
+sleep 3
 
-# 检查状态
+# 检查 FrpUi 是否真正启动
+FRPUI_STATUS=$(systemctl is-active frpui)
+if [ "$FRPUI_STATUS" != "active" ]; then
+    echo -e "${RED}警告: FrpUi 服务启动失败${NC}"
+    echo "查看日志: journalctl -u frpui -n 20"
+    systemctl status frpui --no-pager
+else
+    echo -e "${GREEN}✓ FrpUi 服务运行正常${NC}"
+fi
+
+# 检查端口监听
+echo ""
+echo -e "${BLUE}检查端口监听状态...${NC}"
+if command -v ss &> /dev/null; then
+    echo "frps (7000端口):"
+    ss -tlnp | grep :7000 || echo "  未监听"
+    echo "FrpUi (3000端口):"
+    ss -tlnp | grep :3000 || echo "  未监听"
+elif command -v netstat &> /dev/null; then
+    echo "frps (7000端口):"
+    netstat -tlnp 2>/dev/null | grep :7000 || echo "  未监听"
+    echo "FrpUi (3000端口):"
+    netstat -tlnp 2>/dev/null | grep :3000 || echo "  未监听"
+fi
+
+# 最终状态报告
 echo ""
 echo -e "${GREEN}========================================${NC}"
 echo -e "${GREEN}  部署完成！${NC}"
 echo -e "${GREEN}========================================${NC}"
 echo ""
 echo -e "${YELLOW}服务状态:${NC}"
-echo "  frps: $(systemctl is-active frps)"
-echo "  frpui: $(systemctl is-active frpui)"
+echo "  frps:  $FRPS_STATUS"
+echo "  frpui: $FRPUI_STATUS"
 echo ""
-echo -e "${YELLOW}访问地址:${NC}"
-echo "  FrpUi: http://$(curl -s icanhazip.com):3000"
+
+if [ "$FRPS_STATUS" = "active" ] && [ "$FRPUI_STATUS" = "active" ]; then
+    echo -e "${GREEN}✓ 所有服务运行正常！${NC}"
+    echo ""
+    echo -e "${YELLOW}访问地址:${NC}"
+    echo "  FrpUi: http://$(curl -s icanhazip.com):3000"
+else
+    echo -e "${RED}✗ 部分服务启动失败，请查看上方日志${NC}"
+fi
+
 echo ""
 echo -e "${YELLOW}重要文件 (都在 $INSTALL_DIR 目录):${NC}"
 echo "  frps 程序: $INSTALL_DIR/frps"
@@ -177,6 +242,7 @@ echo "  项目目录: $INSTALL_DIR"
 echo ""
 echo -e "${YELLOW}常用命令:${NC}"
 echo "  查看日志: journalctl -u frpui -f"
+echo "  查看 frps 日志: journalctl -u frps -f"
 echo "  重启服务: systemctl restart frpui"
 echo "  停止服务: systemctl stop frpui frps"
 echo ""
