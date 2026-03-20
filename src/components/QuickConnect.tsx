@@ -99,11 +99,34 @@ export default function QuickConnect({ showMessage, onBack }: QuickConnectProps)
 
   const copyToClipboard = async (text: string, key: string) => {
     try {
-      await navigator.clipboard.writeText(text);
+      // 尝试使用现代 Clipboard API
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        // 降级方案：使用传统的复制方法
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textArea);
+        
+        if (!successful) {
+          throw new Error('复制命令失败');
+        }
+      }
+      
       setCopied(key);
       setTimeout(() => setCopied(null), 2000);
-    } catch {
-      showMessage('error', '复制失败');
+      showMessage('success', '已复制到剪贴板');
+    } catch (error) {
+      console.error('复制失败:', error);
+      showMessage('error', '复制失败，请手动复制');
     }
   };
 
@@ -327,10 +350,10 @@ export default function QuickConnect({ showMessage, onBack }: QuickConnectProps)
                 <div className="flex items-center gap-2">
                   <span className="text-xs bg-purple-500/30 text-purple-300 px-2 py-0.5 rounded">Windows</span>
                   <code className="flex-1 text-xs text-purple-300 bg-black/40 px-3 py-2 rounded truncate font-mono">
-                    powershell -ExecutionPolicy Bypass -Command &quot;irm https://ghfast.top/https://raw.githubusercontent.com/WaNGjk6/simple-frp-panel/main/scripts/frpc-quick.ps1 | iex -ServerAddr ${formData.serverAddr} -ServerPort ${formData.serverPort} -AuthToken ${formData.authToken} -ExposePort ${generated.exposePort} -AdminPwd ${generated.adminPwd}&quot;
+                    {`powershell -ExecutionPolicy Bypass -Command "& {irm https://ghfast.top/https://raw.githubusercontent.com/WaNGjk6/simple-frp-panel/main/scripts/frpc-quick.ps1 | iex}" -ServerAddr ${formData.serverAddr} -ServerPort ${formData.serverPort} -AuthToken ${formData.authToken} -ExposePort ${generated.exposePort} -AdminPwd ${generated.adminPwd}`}
                   </code>
                   <button
-                    onClick={() => copyToClipboard(`powershell -ExecutionPolicy Bypass -Command "irm https://ghfast.top/https://raw.githubusercontent.com/WaNGjk6/simple-frp-panel/main/scripts/frpc-quick.ps1 | iex -ServerAddr ${formData.serverAddr} -ServerPort ${formData.serverPort} -AuthToken ${formData.authToken} -ExposePort ${generated.exposePort} -AdminPwd ${generated.adminPwd}"`, 'winCmd')}
+                    onClick={() => copyToClipboard(`powershell -ExecutionPolicy Bypass -Command "& {irm https://ghfast.top/https://raw.githubusercontent.com/WaNGjk6/simple-frp-panel/main/scripts/frpc-quick.ps1 | iex}" -ServerAddr ${formData.serverAddr} -ServerPort ${formData.serverPort} -AuthToken ${formData.authToken} -ExposePort ${generated.exposePort} -AdminPwd ${generated.adminPwd}`, 'winCmd')}
                     className="p-1.5 bg-white/10 hover:bg-white/20 rounded transition-colors"
                   >
                     {copied === 'winCmd' ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
