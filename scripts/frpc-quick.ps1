@@ -1,13 +1,14 @@
 # FrpUi Windows 一键部署脚本
-# 使用方式: powershell -ExecutionPolicy Bypass -File frpc-quick.ps1 <服务端地址> <服务端端口> <认证令牌> <映射端口> [节点名称]
-# 示例: powershell -ExecutionPolicy Bypass -File frpc-quick.ps1 frp.example.com 7000 mytoken 17400 my-server
+# 使用方式: powershell -ExecutionPolicy Bypass -File frpc-quick.ps1 <服务端地址> <服务端端口> <认证令牌> <映射端口> [节点名称] [密码]
+# 示例: powershell -ExecutionPolicy Bypass -File frpc-quick.ps1 frp.example.com 7000 mytoken 17400 my-server mypassword123
 
 param(
     [Parameter(Mandatory=$true)][string]$ServerAddr,
     [Parameter(Mandatory=$true)][int]$ServerPort,
     [Parameter(Mandatory=$true)][string]$AuthToken,
     [Parameter(Mandatory=$true)][int]$ExposePort,
-    [string]$NodeName = "frpc-node"
+    [string]$NodeName = "frpc-node",
+    [string]$AdminPwd = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -30,10 +31,12 @@ Write-Host "服务端: $ServerAddr`:$ServerPort"
 Write-Host "节点名: $NodeName"
 Write-Host "映射端口: $ExposePort"
 
-# 生成随机密码
-$chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789"
-$adminPwd = -join (1..12 | ForEach-Object { $chars[(Get-Random -Maximum $chars.Length)] })
-Write-Host "Admin 密码: $adminPwd"
+# 如果没有提供密码，则生成随机密码
+if ([string]::IsNullOrEmpty($AdminPwd)) {
+    $chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789"
+    $AdminPwd = -join (1..12 | ForEach-Object { $chars[(Get-Random -Maximum $chars.Length)] })
+}
+Write-Host "Admin 密码: $AdminPwd"
 
 # 配置
 $FRPC_VERSION = "0.61.1"

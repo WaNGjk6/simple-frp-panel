@@ -1,7 +1,7 @@
 #!/bin/bash
 # FrpUi Linux 一键部署脚本
-# 使用方式: bash frpc-quick.sh <服务端地址> <服务端端口> <认证令牌> <映射端口> [节点名称]
-# 示例: bash frpc-quick.sh frp.example.com 7000 mytoken 17400 my-server
+# 使用方式: bash frpc-quick.sh <服务端地址> <服务端端口> <认证令牌> <映射端口> [节点名称] [密码]
+# 示例: bash frpc-quick.sh frp.example.com 7000 mytoken 17400 my-server mypassword123
 
 set -e
 
@@ -30,6 +30,7 @@ SERVER_PORT="$2"
 AUTH_TOKEN="$3"
 EXPOSE_PORT="$4"
 NODE_NAME="${5:-frpc-node}"
+ADMIN_PWD="${6:-}"
 
 echo -e "${GREEN}========================================${NC}"
 echo -e "${GREEN}  FrpUi Linux 一键部署脚本${NC}"
@@ -38,8 +39,10 @@ echo "服务端: $SERVER_ADDR:$SERVER_PORT"
 echo "节点名: $NODE_NAME"
 echo "映射端口: $EXPOSE_PORT"
 
-# 生成随机密码
-ADMIN_PWD=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 12)
+# 如果没有提供密码，则生成随机密码
+if [ -z "$ADMIN_PWD" ]; then
+    ADMIN_PWD=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 12)
+fi
 echo "Admin 密码: $ADMIN_PWD"
 
 # 架构检测
