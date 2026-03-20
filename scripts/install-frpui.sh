@@ -37,7 +37,7 @@ if ! command -v apt-get &> /dev/null && ! command -v yum &> /dev/null; then
     exit 1
 fi
 
-echo -e "${BLUE}[1/8] 安装系统依赖 (含解压工具)...${NC}"
+echo -e "${BLUE}[1/9] 安装系统依赖 (含解压工具)...${NC}"
 if command -v apt-get &> /dev/null; then
     apt-get update -qq
     apt-get install -y -qq curl wget git systemd tar gzip
@@ -51,7 +51,7 @@ if ! command -v tar &> /dev/null; then
     exit 1
 fi
 
-echo -e "${BLUE}[2/8] 安装 Node.js ${NODE_VERSION}...${NC}"
+echo -e "${BLUE}[2/9] 安装 Node.js ${NODE_VERSION}...${NC}"
 if ! command -v node &> /dev/null || [ "$(node -v | cut -d'v' -f2 | cut -d'.' -f1)" != "$NODE_VERSION" ]; then
     curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash - 2>/dev/null || \
     curl -fsSL https://rpm.nodesource.com/setup_${NODE_VERSION}.x | bash -
@@ -66,7 +66,7 @@ fi
 echo "Node.js 版本: $(node -v)"
 echo "npm 版本: $(npm -v)"
 
-echo -e "${BLUE}[3/8] 下载 FrpUi 项目...${NC}"
+echo -e "${BLUE}[3/9] 下载 FrpUi 项目...${NC}"
 if [ -d "$INSTALL_DIR" ]; then
     echo -e "${YELLOW}目录已存在，更新代码...${NC}"
     cd $INSTALL_DIR
@@ -75,40 +75,8 @@ else
     git clone --depth 1 $PROJECT_URL $INSTALL_DIR
 fi
 
-echo -e "${BLUE}[4/8] 下载并安装 frp 到项目目录...${NC}"
-cd $INSTALL_DIR
-
-if [ ! -f "$INSTALL_DIR/frps" ]; then
-    echo "下载 frp ${FRP_VERSION}..."
-    wget -q --show-progress -O frp.tar.gz $FRP_URL
-    
-    # 验证下载成功
-    if [ ! -f "frp.tar.gz" ]; then
-        echo -e "${RED}错误: frp 下载失败${NC}"
-        exit 1
-    fi
-    
-    echo "解压 frp..."
-    tar -xzf frp.tar.gz --strip-components=1
-    rm -f frp.tar.gz
-    chmod +x frps frpc
-    
-    # 验证解压成功
-    if [ ! -f "$INSTALL_DIR/frps" ]; then
-        echo -e "${RED}错误: frp 解压失败，frps 文件未找到${NC}"
-        exit 1
-    fi
-    
-    echo -e "${GREEN}frp 安装完成${NC}"
-else
-    echo -e "${YELLOW}frp 已存在，跳过下载${NC}"
-fi
-
-echo -e "${BLUE}[5/8] 安装项目依赖...${NC}"
-cd $INSTALL_DIR
-npm install --production 2>&1 | tail -5
-
-echo -e "${BLUE}[6/8] 创建 frps 配置文件...${NC}"
+echo -e "${BLUE}[4/9] 创建 frps 配置文件...${NC}"
+# 先创建配置文件，防止被 frp 压缩包覆盖
 if [ ! -f "$INSTALL_DIR/frps.toml" ]; then
     cat > $INSTALL_DIR/frps.toml << 'EOF'
 # FRP 服务端配置
@@ -122,9 +90,59 @@ webServer.user = "admin"
 webServer.password = "admin"
 EOF
     echo -e "${YELLOW}请编辑 $INSTALL_DIR/frps.toml 修改配置${NC}"
+else
+    echo -e "${YELLOW}配置文件已存在，跳过创建${NC}"
 fi
 
-echo -e "${BLUE}[7/8] 创建 systemd 服务...${NC}"
+echo -e "${BLUE}[5/9] 下载并安装 frp 到项目目录...${NC}"
+cd $INSTALL_DIR
+
+if [ ! -f "$INSTALL_DIR/frps" ]; then
+    echo "下载 frp ${FRP_VERSION}..."
+    wget -q --show-progress -O frp.tar.gz $FRP_URL
+    
+    # 验证下载成功
+    if [ ! -f "frp.tar.gz" ]; then
+        echo -e "${RED}错误: frp 下载失败${NC}"
+        exit 1
+    fi
+    
+    echo "解压 frp..."
+    # 只解压 frps 和 frpc，不覆盖配置文件
+    tar -xzf frp.tar.gz --strip-components=1 frp_${FRP_VERSION}_linux_amd64/frps frp_${FRP_VERSION}_linux_amd64/frpc 2>/dev/null || \
+    tar -xzf frp.tar.gz --strip-components=1
+    rm -f frp.tar.gz
+    chmod +x frps frpc 2>/dev/null || true
+    
+    # 验证解压成功
+    if [ ! -f "$INSTALL_DIR/frps" ]; then
+        echo -e "${RED}错误: frp 解压失败，frps 文件未找到${NC}"
+        exit 1
+    fi
+    
+    echo -e "${GREEN}frp 安装完成${NC}"
+else
+    echo -e "${YELLOW}frp 已存在，跳过下载${NC}"
+fi
+
+echo -e "${BLUE}[6/9] 安装项目依赖 (含开发依赖)...${NC}"
+cd $INSTALL_DIR
+# 不跳过开发依赖，因为 Next.js 编译需要
+npm install 2>&1 | tail -10
+
+echo -e "${BLUE}[7/9] 编译 Next.js 项目...${NC}"
+cd $INSTALL_DIR
+npm run build 2>&1 | tail -20
+
+# 验证编译成功
+if [ ! -d "$INSTALL_DIR/.next" ]; then
+    echo -e "${RED}错误: 编译失败，.next 目录未找到${NC}"
+    exit 1
+fi
+
+echo -e "${GREEN}✓ 编译完成${NC}"
+
+echo -e "${BLUE}[8/9] 创建 systemd 服务...${NC}"
 
 # FrpUi 服务
 cat > /etc/systemd/system/frpui.service << EOF
@@ -166,7 +184,7 @@ EOF
 # 重载 systemd
 systemctl daemon-reload
 
-echo -e "${BLUE}[8/8] 启动服务并验证...${NC}"
+echo -e "${BLUE}[9/9] 启动服务并验证...${NC}"
 
 # 启动 frps
 systemctl enable frps
