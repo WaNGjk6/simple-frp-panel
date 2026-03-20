@@ -315,10 +315,10 @@ export default function QuickConnect({ showMessage, onBack }: QuickConnectProps)
                 <div className="flex items-center gap-2">
                   <span className="text-xs bg-green-500/30 text-green-300 px-2 py-0.5 rounded">Linux</span>
                   <code className="flex-1 text-xs text-blue-300 bg-black/40 px-3 py-2 rounded truncate font-mono">
-                    {`curl -sSL https://ghfast.top/https://raw.githubusercontent.com/kaaass/FrpUi/main/scripts/frpc-quick.sh | bash -s -- ${formData.serverAddr} ${formData.serverPort} ${formData.authToken} ${generated.exposePort}`}
+                    {`curl -sSL https://ghfast.top/https://raw.githubusercontent.com/WaNGjk6/simple-frp-panel/main/scripts/frpc-quick.sh | bash -s -- ${formData.serverAddr} ${formData.serverPort} ${formData.authToken} ${generated.exposePort}`}
                   </code>
                   <button
-                    onClick={() => copyToClipboard(`curl -sSL https://ghfast.top/https://raw.githubusercontent.com/kaaass/FrpUi/main/scripts/frpc-quick.sh | bash -s -- ${formData.serverAddr} ${formData.serverPort} ${formData.authToken} ${generated.exposePort}`, 'linuxCmd')}
+                    onClick={() => copyToClipboard(`curl -sSL https://ghfast.top/https://raw.githubusercontent.com/WaNGjk6/simple-frp-panel/main/scripts/frpc-quick.sh | bash -s -- ${formData.serverAddr} ${formData.serverPort} ${formData.authToken} ${generated.exposePort}`, 'linuxCmd')}
                     className="p-1.5 bg-white/10 hover:bg-white/20 rounded transition-colors"
                   >
                     {copied === 'linuxCmd' ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
@@ -327,10 +327,10 @@ export default function QuickConnect({ showMessage, onBack }: QuickConnectProps)
                 <div className="flex items-center gap-2">
                   <span className="text-xs bg-purple-500/30 text-purple-300 px-2 py-0.5 rounded">Windows</span>
                   <code className="flex-1 text-xs text-purple-300 bg-black/40 px-3 py-2 rounded truncate font-mono">
-                    powershell -ExecutionPolicy Bypass -Command &quot;irm https://ghfast.top/https://raw.githubusercontent.com/kaaass/FrpUi/main/scripts/frpc-quick.ps1 | iex&quot;
+                    powershell -ExecutionPolicy Bypass -Command &quot;irm https://ghfast.top/https://raw.githubusercontent.com/WaNGjk6/simple-frp-panel/main/scripts/frpc-quick.ps1 | iex&quot;
                   </code>
                   <button
-                    onClick={() => copyToClipboard(`powershell -ExecutionPolicy Bypass -Command "irm https://ghfast.top/https://raw.githubusercontent.com/kaaass/FrpUi/main/scripts/frpc-quick.ps1 | iex"`, 'winCmd')}
+                    onClick={() => copyToClipboard(`powershell -ExecutionPolicy Bypass -Command "irm https://ghfast.top/https://raw.githubusercontent.com/WaNGjk6/simple-frp-panel/main/scripts/frpc-quick.ps1 | iex"`, 'winCmd')}
                     className="p-1.5 bg-white/10 hover:bg-white/20 rounded transition-colors"
                   >
                     {copied === 'winCmd' ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
