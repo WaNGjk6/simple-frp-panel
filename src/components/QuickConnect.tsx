@@ -41,7 +41,7 @@ export default function QuickConnect({ showMessage, onBack }: QuickConnectProps)
       const data = await fetchConfig();
       setFormData(prev => ({
         ...prev,
-        serverAddr: "",
+        serverAddr: typeof window !== 'undefined' ? window.location.hostname : "",
         serverPort: data.bindPort || 7000,
         authToken: data.auth?.token || "",
       }));
@@ -58,7 +58,7 @@ export default function QuickConnect({ showMessage, onBack }: QuickConnectProps)
   }, [loadServerConfig]);
 
   const handleGenerate = async () => {
-    if (!formData.serverAddr) {
+    if (!formData.serverAddr.trim()) {
       showMessage('error', '请输入服务端地址');
       return;
     }
@@ -99,11 +99,9 @@ export default function QuickConnect({ showMessage, onBack }: QuickConnectProps)
 
   const copyToClipboard = async (text: string, key: string) => {
     try {
-      // 尝试使用现代 Clipboard API
       if (navigator.clipboard && window.isSecureContext) {
         await navigator.clipboard.writeText(text);
       } else {
-        // 降级方案：使用传统的复制方法
         const textArea = document.createElement('textarea');
         textArea.value = text;
         textArea.style.position = 'fixed';
@@ -338,10 +336,10 @@ export default function QuickConnect({ showMessage, onBack }: QuickConnectProps)
                 <div className="flex items-center gap-2">
                   <span className="text-xs bg-green-500/30 text-green-300 px-2 py-0.5 rounded">Linux</span>
                   <code className="flex-1 text-xs text-blue-300 bg-black/40 px-3 py-2 rounded truncate font-mono">
-                    {`curl -sSL https://ghfast.top/https://raw.githubusercontent.com/WaNGjk6/simple-frp-panel/main/scripts/frpc-quick.sh | bash -s -- ${formData.serverAddr} ${formData.serverPort} ${formData.authToken} ${generated.exposePort} ${generated.adminPwd}`}
+                    {`curl -sSL https://ghfast.top/https://raw.githubusercontent.com/WaNGjk6/simple-frp-panel/main/scripts/frpc-quick.sh | bash -s -- ${formData.serverAddr.trim()} ${formData.serverPort} ${formData.authToken} ${generated.exposePort} ${generated.adminUser} ${generated.adminPwd}`}
                   </code>
                   <button
-                    onClick={() => copyToClipboard(`curl -sSL https://ghfast.top/https://raw.githubusercontent.com/WaNGjk6/simple-frp-panel/main/scripts/frpc-quick.sh | bash -s -- ${formData.serverAddr} ${formData.serverPort} ${formData.authToken} ${generated.exposePort} ${generated.adminPwd}`, 'linuxCmd')}
+                    onClick={() => copyToClipboard(`curl -sSL https://ghfast.top/https://raw.githubusercontent.com/WaNGjk6/simple-frp-panel/main/scripts/frpc-quick.sh | bash -s -- ${formData.serverAddr.trim()} ${formData.serverPort} ${formData.authToken} ${generated.exposePort} ${generated.adminUser} ${generated.adminPwd}`, 'linuxCmd')}
                     className="p-1.5 bg-white/10 hover:bg-white/20 rounded transition-colors"
                   >
                     {copied === 'linuxCmd' ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
@@ -350,10 +348,10 @@ export default function QuickConnect({ showMessage, onBack }: QuickConnectProps)
                 <div className="flex items-center gap-2">
                   <span className="text-xs bg-purple-500/30 text-purple-300 px-2 py-0.5 rounded">Windows</span>
                   <code className="flex-1 text-xs text-purple-300 bg-black/40 px-3 py-2 rounded truncate font-mono">
-                    {`powershell -ExecutionPolicy Bypass -Command "& {irm https://ghfast.top/https://raw.githubusercontent.com/WaNGjk6/simple-frp-panel/main/scripts/frpc-quick.ps1 | iex}" -ServerAddr ${formData.serverAddr} -ServerPort ${formData.serverPort} -AuthToken ${formData.authToken} -ExposePort ${generated.exposePort} -AdminPwd ${generated.adminPwd}`}
+                    {`powershell -ExecutionPolicy Bypass -Command "& {irm https://ghfast.top/https://raw.githubusercontent.com/WaNGjk6/simple-frp-panel/main/scripts/frpc-quick.ps1 | iex}" -ServerAddr ${formData.serverAddr.trim()} -ServerPort ${formData.serverPort} -AuthToken ${formData.authToken} -ExposePort ${generated.exposePort} -AdminUser ${generated.adminUser} -AdminPwd ${generated.adminPwd}`}
                   </code>
                   <button
-                    onClick={() => copyToClipboard(`powershell -ExecutionPolicy Bypass -Command "& {irm https://ghfast.top/https://raw.githubusercontent.com/WaNGjk6/simple-frp-panel/main/scripts/frpc-quick.ps1 | iex}" -ServerAddr ${formData.serverAddr} -ServerPort ${formData.serverPort} -AuthToken ${formData.authToken} -ExposePort ${generated.exposePort} -AdminPwd ${generated.adminPwd}`, 'winCmd')}
+                    onClick={() => copyToClipboard(`powershell -ExecutionPolicy Bypass -Command "& {irm https://ghfast.top/https://raw.githubusercontent.com/WaNGjk6/simple-frp-panel/main/scripts/frpc-quick.ps1 | iex}" -ServerAddr ${formData.serverAddr.trim()} -ServerPort ${formData.serverPort} -AuthToken ${formData.authToken} -ExposePort ${generated.exposePort} -AdminUser ${generated.adminUser} -AdminPwd ${generated.adminPwd}`, 'winCmd')}
                     className="p-1.5 bg-white/10 hover:bg-white/20 rounded transition-colors"
                   >
                     {copied === 'winCmd' ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
