@@ -90,7 +90,7 @@ echo -e "${BLUE}[5/8] 安装项目依赖...${NC}"
 cd $INSTALL_DIR
 npm install --production 2>&1 | tail -5
 
-echo -e "${BLUE}[6/8] 创建 frps 配置文件...${NC}}
+echo -e "${BLUE}[6/8] 创建 frps 配置文件...${NC}"
 if [ ! -f "$INSTALL_DIR/frps.toml" ]; then
     cat > $INSTALL_DIR/frps.toml << 'EOF'
 # FRP 服务端配置
