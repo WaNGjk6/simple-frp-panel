@@ -1,0 +1,25 @@
+# 依赖
+node_modules/
+
+# Next.js 构建产物
+.next/
+out/
+
+# 本地令牌 / 环境变量（切勿上传）
+.env
+.env.local
+.env.*.local
+
+# 日志
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 其他编译产物
+dist/
+build/
