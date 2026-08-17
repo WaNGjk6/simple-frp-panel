@@ -14,7 +14,7 @@ NC='\033[0m'
 
 # 配置
 FRP_VERSION="0.61.1"
-FRP_URL="https://ghfast.top/https://github.com/fatedier/frp/releases/download/v${FRP_VERSION}/frp_${FRP_VERSION}_linux_amd64.tar.gz"
+FRP_URL="https://github.com/fatedier/frp/releases/download/v${FRP_VERSION}/frp_${FRP_VERSION}_linux_amd64.tar.gz"
 PROJECT_URL="https://github.com/WaNGjk6/simple-frp-panel.git"
 INSTALL_DIR="/opt/frpui"
 NODE_VERSION="20"

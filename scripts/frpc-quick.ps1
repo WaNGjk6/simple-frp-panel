@@ -40,7 +40,6 @@ Write-Host "Admin 密码: $AdminPwd"
 
 # 配置
 $FRPC_VERSION = "0.61.1"
-$GITHUB_PROXY = "https://ghfast.top/"
 $ADMIN_PORT = 7400
 $ADMIN_USER = "admin"
 
@@ -53,7 +52,7 @@ if (-not (Test-Path $DEST_DIR)) {
 }
 
 Write-ColorOutput "[2/4] 下载 frpc v$FRPC_VERSION..." "Yellow"
-$FRPC_URL = "${GITHUB_PROXY}https://github.com/fatedier/frp/releases/download/v${FRPC_VERSION}/frp_${FRPC_VERSION}_windows_amd64.zip"
+$FRPC_URL = "https://github.com/fatedier/frp/releases/download/v${FRPC_VERSION}/frp_${FRPC_VERSION}_windows_amd64.zip"
 $FRPC_ZIP = "$DEST_DIR\frp.zip"
 
 try {

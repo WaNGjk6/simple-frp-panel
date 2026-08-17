@@ -336,10 +336,10 @@ export default function QuickConnect({ showMessage, onBack }: QuickConnectProps)
                 <div className="flex items-center gap-2">
                   <span className="text-xs bg-green-500/30 text-green-300 px-2 py-0.5 rounded">Linux</span>
                   <code className="flex-1 text-xs text-blue-300 bg-black/40 px-3 py-2 rounded truncate font-mono">
-                    {`curl -sSL https://ghfast.top/https://raw.githubusercontent.com/WaNGjk6/simple-frp-panel/main/scripts/frpc-quick.sh | bash -s -- ${formData.serverAddr.trim()} ${formData.serverPort} ${formData.authToken} ${generated.exposePort} ${generated.adminUser} ${generated.adminPwd}`}
+                    {`curl -sSL https://raw.githubusercontent.com/WaNGjk6/simple-frp-panel/main/scripts/frpc-quick.sh | bash -s -- ${formData.serverAddr.trim()} ${formData.serverPort} ${formData.authToken} ${generated.exposePort} ${generated.adminUser} ${generated.adminPwd}`}
                   </code>
                   <button
-                    onClick={() => copyToClipboard(`curl -sSL https://ghfast.top/https://raw.githubusercontent.com/WaNGjk6/simple-frp-panel/main/scripts/frpc-quick.sh | bash -s -- ${formData.serverAddr.trim()} ${formData.serverPort} ${formData.authToken} ${generated.exposePort} ${generated.adminUser} ${generated.adminPwd}`, 'linuxCmd')}
+                    onClick={() => copyToClipboard(`curl -sSL https://raw.githubusercontent.com/WaNGjk6/simple-frp-panel/main/scripts/frpc-quick.sh | bash -s -- ${formData.serverAddr.trim()} ${formData.serverPort} ${formData.authToken} ${generated.exposePort} ${generated.adminUser} ${generated.adminPwd}`, 'linuxCmd')}
                     className="p-1.5 bg-white/10 hover:bg-white/20 rounded transition-colors"
                   >
                     {copied === 'linuxCmd' ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
@@ -348,10 +348,10 @@ export default function QuickConnect({ showMessage, onBack }: QuickConnectProps)
                 <div className="flex items-center gap-2">
                   <span className="text-xs bg-purple-500/30 text-purple-300 px-2 py-0.5 rounded">Windows</span>
                   <code className="flex-1 text-xs text-purple-300 bg-black/40 px-3 py-2 rounded truncate font-mono">
-                    {`powershell -ExecutionPolicy Bypass -Command "& {irm https://ghfast.top/https://raw.githubusercontent.com/WaNGjk6/simple-frp-panel/main/scripts/frpc-quick.ps1 | iex}" -ServerAddr ${formData.serverAddr.trim()} -ServerPort ${formData.serverPort} -AuthToken ${formData.authToken} -ExposePort ${generated.exposePort} -AdminUser ${generated.adminUser} -AdminPwd ${generated.adminPwd}`}
+                    {`powershell -ExecutionPolicy Bypass -Command "& {irm https://raw.githubusercontent.com/WaNGjk6/simple-frp-panel/main/scripts/frpc-quick.ps1 | iex}" -ServerAddr ${formData.serverAddr.trim()} -ServerPort ${formData.serverPort} -AuthToken ${formData.authToken} -ExposePort ${generated.exposePort} -AdminUser ${generated.adminUser} -AdminPwd ${generated.adminPwd}`}
                   </code>
                   <button
-                    onClick={() => copyToClipboard(`powershell -ExecutionPolicy Bypass -Command "& {irm https://ghfast.top/https://raw.githubusercontent.com/WaNGjk6/simple-frp-panel/main/scripts/frpc-quick.ps1 | iex}" -ServerAddr ${formData.serverAddr.trim()} -ServerPort ${formData.serverPort} -AuthToken ${formData.authToken} -ExposePort ${generated.exposePort} -AdminUser ${generated.adminUser} -AdminPwd ${generated.adminPwd}`, 'winCmd')}
+                    onClick={() => copyToClipboard(`powershell -ExecutionPolicy Bypass -Command "& {irm https://raw.githubusercontent.com/WaNGjk6/simple-frp-panel/main/scripts/frpc-quick.ps1 | iex}" -ServerAddr ${formData.serverAddr.trim()} -ServerPort ${formData.serverPort} -AuthToken ${formData.authToken} -ExposePort ${generated.exposePort} -AdminUser ${generated.adminUser} -AdminPwd ${generated.adminPwd}`, 'winCmd')}
                     className="p-1.5 bg-white/10 hover:bg-white/20 rounded transition-colors"
                   >
                     {copied === 'winCmd' ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}

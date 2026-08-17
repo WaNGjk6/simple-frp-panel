@@ -13,7 +13,6 @@ NC='\033[0m'
 
 # 默认配置
 FRPC_VERSION="0.61.1"
-GITHUB_PROXY="https://ghfast.top/"
 ADMIN_PORT=7400
 ADMIN_USER="admin"
 
@@ -64,7 +63,7 @@ cd $FRPC_DIR
 
 # 2. 下载 frpc
 echo -e "${YELLOW}[2/5] 下载 frpc v${FRPC_VERSION}...${NC}"
-FRPC_URL="${GITHUB_PROXY}https://github.com/fatedier/frp/releases/download/v${FRPC_VERSION}/frp_${FRPC_VERSION}_linux_${FRPC_ARCH}.tar.gz"
+FRPC_URL="https://github.com/fatedier/frp/releases/download/v${FRPC_VERSION}/frp_${FRPC_VERSION}_linux_${FRPC_ARCH}.tar.gz"
 
 if command -v wget &> /dev/null; then
     wget -q --show-progress -O frp.tar.gz $FRPC_URL

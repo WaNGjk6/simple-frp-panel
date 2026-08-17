@@ -13,7 +13,6 @@
 - ⚡ **一键接入**：网页端自动生成带参数的专属配置命令，客户端只需复制粘贴即可秒上线。
 - 🐧 **全平台兼容**：自动识别并下载对应架构的 FRP（支持 x86_64, arm64 等），提供 Linux (Bash) 与 Windows (PowerShell) 一键脚本。
 - 🛡️ **进程守护**：服务端与 Linux 客户端均采用 `systemd` 托管，开机自启，稳如磐石。
-- 🚀 **国内加速**：内置 GitHub 加速镜像（ghproxy），国内服务器部署同样纵享丝滑。
 - 📱 **移动端适配**：不方便用电脑？没关闭，我为你适配了移动端页面，也可以便捷的设置配置。
 
 ------
@@ -48,14 +47,14 @@
 - 操作系统：Debian / Ubuntu / CentOS
 - 权限：必须使用 `root` 用户运行
 
-## 一键部署命令（已配置为国内加速源）
+## 一键部署命令
 
 在你的公网服务器终端中执行以下命令：
 
 Bash
 
 ```
-curl -sSL https://ghfast.top/https://raw.githubusercontent.com/WaNGjk6/simple-frp-panel/main/scripts/install-frpui.sh | sudo bash
+curl -sSL https://raw.githubusercontent.com/WaNGjk6/simple-frp-panel/main/scripts/install-frpui.sh | sudo bash
 ```
 
 ## 部署后配置 (重要 ⚠️)

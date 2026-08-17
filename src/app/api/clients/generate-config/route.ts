@@ -4,7 +4,6 @@ import { NextResponse } from 'next/server';
 // 全局配置：在这里修改版本和下载源
 // ==========================================
 const FRPC_VERSION = "0.61.1"; 
-const GITHUB_PROXY = "https://ghfast.top/"; // GitHub 加速前缀
 
 interface GenerateConfigRequest {
   serverAddr: string;
@@ -75,10 +74,10 @@ FRPC_DIR="/opt/frp"
 mkdir -p $FRPC_DIR
 cd $FRPC_DIR
 
-# 3. 下载与安装 (带加速)
-FRPC_URL="${GITHUB_PROXY}https://github.com/fatedier/frp/releases/download/v${FRPC_VERSION}/frp_${FRPC_VERSION}_linux_\${FRPC_ARCH}.tar.gz"
+# 3. 下载与安装 (GitHub 官方源)
+FRPC_URL="https://github.com/fatedier/frp/releases/download/v${FRPC_VERSION}/frp_${FRPC_VERSION}_linux_\${FRPC_ARCH}.tar.gz"
 
-echo "正在从加速源下载 frpc v${FRPC_VERSION}..."
+echo "正在从 GitHub 官方源下载 frpc v${FRPC_VERSION}..."
 wget -q --show-progress -O frp.tar.gz $FRPC_URL
 tar -xzf frp.tar.gz --strip-components=1
 rm frp.tar.gz
@@ -125,7 +124,7 @@ echo "=========================================="
 function generateWindowsScript(config: GenerateConfigRequest, configToml: string): string {
   return `# FrpUi Windows 接入脚本
 $FRPC_VERSION = "${FRPC_VERSION}"
-$BASE_URL = "${GITHUB_PROXY}https://github.com/fatedier/frp/releases/download/v$FRPC_VERSION/frp_$FRPC_VERSION"
+$BASE_URL = "https://github.com/fatedier/frp/releases/download/v$FRPC_VERSION/frp_$FRPC_VERSION"
 $DEST_DIR = "$env:USERPROFILE\\Documents\\frp"
 
 Write-Host "🚀 开始自动化安装 frpc..." -ForegroundColor Cyan
